@@ -1,0 +1,28 @@
+---
+
+- name: install required system packages
+  apt: update_cache=yes cache_valid_time=3600 name={{ item }} state=present
+  with_items:
+      - iptables-persistent
+  tags:
+      - install
+
+- name: debug printing
+  debug: var=cluster_friends
+
+- name: debug printing
+  debug: var=cluster_failovers
+
+- name: debug printing
+  debug: var=cluster_ports
+
+- name: put iptables config
+  template: src={{ item }} dest=/etc/iptables/{{ item }}
+  with_items:
+    - rules.v4
+    - rules.v6
+  tags:
+    - config
+
+- name: iptables-persistent restart
+  service: name=iptables-persistent state=restarted
